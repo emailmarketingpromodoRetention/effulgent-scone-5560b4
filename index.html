@@ -87,16 +87,13 @@
   }
 
   /* ---------- main ---------- */
-  main{ max-width:1200px; margin:0 auto; padding:40px 28px 90px; }
+  main{ max-width:760px; margin:0 auto; padding:40px 28px 90px; }
 
   .plans{
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
+    grid-template-columns:1fr;
     gap:20px;
     align-items:stretch;
-  }
-  @media (max-width: 980px){
-    .plans{ grid-template-columns:1fr; }
   }
 
   .plan{
@@ -109,6 +106,22 @@
     position:relative;
   }
   .plan.featured{ border-color:var(--accent); box-shadow:0 8px 28px rgba(199,53,50,.14); }
+
+  .plan.unavailable{ opacity:.6; }
+  .plan.unavailable .plan-body{ pointer-events:none; }
+  .unavailable-banner{
+    background:var(--accent);
+    color:#fff;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    text-align:center;
+    padding:9px 14px;
+    line-height:1.4;
+  }
+  .plan-cta:disabled{ background:#B9B9B9; cursor:not-allowed; }
+  .plan-cta:disabled:hover{ background:#B9B9B9; }
 
   .plan-badge{
     position:absolute;
@@ -140,6 +153,7 @@
     text-transform:uppercase;
     letter-spacing:.01em;
     margin:0 0 6px;
+    min-height:56px;
   }
   .plan-desc{ font-size:13px; color:var(--muted); line-height:1.5; margin:0 0 20px; min-height:38px; }
 
@@ -172,7 +186,9 @@
     font-size:13.5px;
     line-height:1.45;
     padding:6px 0;
+    transition:opacity .15s ease;
   }
+  .feat.off{ opacity:.7; }
   .feat .tick{
     flex-shrink:0;
     width:16px; height:16px;
@@ -180,17 +196,110 @@
     background:var(--good);
     display:flex; align-items:center; justify-content:center;
     margin-top:2px;
+    transition:background .15s ease;
   }
+  .feat.off .tick{ background:var(--accent); }
   .feat .tick svg{ width:9px; height:9px; }
   .feat-text .feat-label{ color:var(--ink); }
   .feat-text .feat-desc{ color:var(--muted); font-size:12px; margin-top:2px; line-height:1.5; }
-  .feat-price{
+
+  .item-switch{
+    flex-shrink:0;
+    width:38px; height:22px;
+    border-radius:999px;
+    background:var(--line);
+    position:relative;
+    cursor:pointer;
+    border:none;
+    transition:background .15s ease;
+  }
+  .item-switch::after{
+    content:'';
+    position:absolute;
+    top:2px; left:2px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.25);
+    transition:transform .15s ease;
+  }
+  .item-switch.on{ background:var(--good); }
+  .item-switch.on::after{ transform:translateX(16px); }
+
+  .feat-controls{
+    flex-shrink:0;
     margin-left:auto;
+    padding-left:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .qty-stepper{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .qty-btn{
+    width:22px; height:22px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .qty-btn:hover{ border-color:var(--accent); background:var(--bg); }
+  .qty-value{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    min-width:14px;
+    text-align:center;
+  }
+  .solution-block{
+    background:var(--paper);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:14px 14px 12px;
+    margin-bottom:14px;
+  }
+  .solution-block-label{
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+    margin-bottom:2px;
+  }
+  .solution-block-desc{ font-size:12px; color:var(--muted); margin-bottom:10px; }
+
+  .own-content-note{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px 14px;
+    margin-top:10px;
+    padding:8px 12px;
+    background:var(--bg);
+    border:1px dashed var(--line);
+    border-radius:8px;
+  }
+  .own-content-hint{ font-size:11.5px; color:var(--muted); }
+  .own-content-check{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12.5px;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .own-content-check input{ accent-color:var(--accent); width:14px; height:14px; cursor:pointer; }
+  .feat-price{
     font-family:'JetBrains Mono', monospace;
     font-size:12px;
     color:var(--muted);
     white-space:nowrap;
-    padding-left:8px;
   }
 
   /* --- base size selector (the only interactive control) --- */
@@ -222,6 +331,12 @@
   }
   .tier-pill:hover{ border-color:var(--accent); }
   .tier-pill.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .tier-pill:disabled{ cursor:not-allowed; opacity:.55; }
+  .tier-pill:disabled:hover{ border-color:var(--line); }
+
+  .base-select-label .lock-badge{ margin-left:8px; vertical-align:middle; }
+  .base-select-off{ opacity:.75; }
+  .base-select-off .base-select-desc{ color:var(--accent); }
 
   .plan-foot{ padding:20px 24px 26px; margin-top:auto; }
   .plan-total-row{
@@ -251,13 +366,171 @@
   .plan-cta:hover{ background:#A32A27; }
 
   .disclaimer{
-    max-width:1200px;
+    max-width:760px;
     margin:0 auto;
     padding:0 28px 40px;
     font-size:11.5px;
     color:var(--muted);
     line-height:1.6;
   }
+
+  /* ---------- quiz ---------- */
+  .quiz{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px 28px;
+    margin-bottom:28px;
+  }
+  .quiz-title{
+    font-family:'Unbounded', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+    margin:0 0 4px;
+  }
+  .quiz-hint{ font-size:12.5px; color:var(--muted); margin:0 0 20px; }
+  .quiz-q{ padding:14px 0; border-top:1px solid var(--line-soft); }
+  .quiz-q:first-of-type{ border-top:none; }
+  .quiz-q-text{ font-size:14px; font-weight:500; color:var(--ink); margin-bottom:10px; }
+  .quiz-options{ display:flex; flex-wrap:wrap; gap:8px; }
+
+  .quiz-checkbox-list{ display:flex; flex-direction:column; gap:2px; }
+  .quiz-checkbox-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 4px;
+    cursor:pointer;
+    border-bottom:1px solid var(--line-soft);
+    position:relative;
+  }
+  .quiz-checkbox-row:last-child{ border-bottom:none; }
+  .quiz-checkbox{
+    position:absolute;
+    top:8px; left:4px;
+    opacity:0;
+    width:18px; height:18px;
+    margin:0;
+    cursor:pointer;
+  }
+  .quiz-checkbox-box{
+    flex-shrink:0;
+    width:18px; height:18px;
+    border-radius:5px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .quiz-checkbox-box svg{ width:11px; height:11px; }
+  .quiz-checkbox-box.checked{ background:var(--accent); border-color:var(--accent); }
+  .quiz-checkbox-row:hover .quiz-checkbox-box{ border-color:var(--accent); }
+  .quiz-checkbox-label{ font-size:13.5px; color:var(--ink); }
+  .quiz-pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    padding:9px 16px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    cursor:pointer;
+    border-radius:999px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .quiz-pill:hover{ border-color:var(--accent); }
+  .quiz-pill.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  .quiz-custom-input{
+    display:block;
+    margin-top:10px;
+    width:100%;
+    max-width:280px;
+    font-family:'Montserrat', sans-serif;
+    font-size:13px;
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .quiz-custom-input:focus{ outline:none; border-color:var(--accent); background:var(--paper); }
+
+  .channel-matrix{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:8px;
+  }
+  @media (max-width: 480px){
+    .channel-matrix{ grid-template-columns:1fr; }
+  }
+  .channel-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:6px 8px;
+    padding:9px 10px;
+    border:1px solid var(--line-soft);
+    border-radius:10px;
+    background:var(--bg);
+  }
+  .channel-label{
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .channel-options{ display:flex; gap:5px; }
+  .channel-pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    padding:5px 9px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    cursor:pointer;
+    border-radius:999px;
+    white-space:nowrap;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .channel-pill:hover{ border-color:var(--accent); }
+  .channel-pill.current.active{ background:var(--good); border-color:var(--good); color:#fff; }
+  .channel-pill.want.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .channel-custom-input{
+    flex-basis:100%;
+    margin-top:2px;
+    max-width:100%;
+    font-family:'Montserrat', sans-serif;
+    font-size:12.5px;
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .channel-custom-input:focus{ outline:none; border-color:var(--accent); }
+
+  /* locked (quiz-determined) toggle */
+  .lock-badge{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--muted);
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:5px 10px;
+    white-space:nowrap;
+  }
+  .lock-badge svg{ flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -270,11 +543,12 @@
     </div>
     <span class="eyebrow">Тарифи впровадження</span>
     <h1>Пакети послуги «Налаштування Retention»</h1>
-    <p class="subtitle">Оберіть пакет відповідно до того, з чого ви стартуєте — без бази контактів, з готовою базою, або повний цикл з промо-розсилками. Єдине, що потрібно уточнити — розмір вашої контактної бази.</p>
+    <p class="subtitle">Дайте відповіді на кілька запитань — і ми сформуємо для вас індивідуальну пропозицію. Кожну послугу можна додатково увімкнути або вимкнути вручну.</p>
   </div>
 </header>
 
 <main>
+  <div class="quiz" id="quiz"></div>
   <div class="plans" id="plans"></div>
 </main>
 
@@ -282,8 +556,11 @@
 
 <script>
 const TICK = `<svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.2L4.6 8.8L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const MINUS = `<svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 6H9.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOCK_ICON = `<svg viewBox="0 0 12 14" width="11" height="11" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="6" width="9" height="7" rx="1.5" fill="#C73532"/><path d="M3.5 6V4C3.5 2.34 4.84 1 6.5 1V1C8.16 1 9.5 2.34 9.5 4V6" stroke="#C73532" stroke-width="1.4" stroke-linecap="round"/></svg>`;
 
 const BASE_TIERS = [
+  { value:'5k', label:'До 5 000', price:70 },
   { value:'20k', label:'До 20 000', price:175 },
   { value:'100k', label:'До 100 000', price:210 },
   { value:'100k+', label:'Від 100 000', price:315 },
@@ -291,83 +568,13 @@ const BASE_TIERS = [
 
 const PLANS = [
   {
-    id:'start',
+    id:'offer',
     badge:null,
-    title:'Пакет 1',
-    subtitle:'Хочу почати, немає бази контактів',
-    desc:'Для старту з нуля і мінімальних технічних вимог',
-    needsBase:false,
-    fixedTotal:1015,
-    groups:[
-      { title:'Налаштування акаунту', items:[
-        { label:'Створення акаунту та забезпечення доставляння листів', desc:'Верифікація домену для гарантованої доставки', price:70 },
-      ]},
-      { title:'Технічні завдання', items:[
-        { label:'Налаштування передачі та оновлення замовлень', price:35 },
-        { label:'Налаштування передачі та оновлення контактів', price:35 },
-        { label:'Інтеграція форми на сайті (реєстрація, підписка)', price:35 },
-        { label:'Встановлення скрипту для форм збору', price:35 },
-        { label:'Додаткові ТЗ (App Inbox, Telegram тощо)', desc:'2 позиції', price:70 },
-      ]},
-      { title:'Шаблон листа', items:[
-        { label:'Шаблон листа Basic', price:270 },
-      ]},
-      { title:'Віджет підписки', items:[
-        { label:'Форма підписки та pop-up Basic', price:150 },
-      ]},
-      { title:'Тригери', items:[
-        { label:'Тригери DOI Basic', desc:'Підтвердження підписки · успішна підписка · контакт вже підписано · повторна підписка', price:105 },
-      ]},
-      { title:'Автоматизовані промо', items:[
-        { label:'Знижки (щомісячна проморозсилка)', price:70 },
-        { label:'Новинки (щомісячна проморозсилка)', price:70 },
-        { label:'Категорійні автоматичні підбірки (1 лист)', price:70 },
-      ]},
-    ]
-  },
-  {
-    id:'grow',
-    badge:null,
-    title:'Пакет 2',
-    subtitle:'Хочу почати, є база',
-    desc:'Для тих, у кого вже є контактна база і хто хоче отримати базовий набір поведінкових тригерів',
+    title:'Ваша пропозиція',
+    subtitle:'Налаштування Retention',
+    desc:'Оберіть потрібні послуги — вартість розрахується автоматично. Деякі позиції можуть бути визначені результатами квізу вище.',
     needsBase:true,
-    fixedTotal:1120,
-    groups:[
-      { title:'Налаштування акаунту', items:[
-        { label:'Створення акаунту та забезпечення доставляння листів', desc:'Верифікація домену для гарантованої доставки', price:70 },
-      ]},
-      { title:'Технічні завдання', items:[
-        { label:'Налаштування передачі та оновлення замовлень', price:35 },
-        { label:'Налаштування передачі та оновлення контактів', price:35 },
-        { label:'Інтеграція форми на сайті (реєстрація, підписка)', price:35 },
-        { label:'Встановлення скрипту для форм збору', price:35 },
-        { label:'ТЗ на web tracking / покинуті кошики/перегляди/зниження ціни', price:35 },
-        { label:'Додаткові ТЗ (App Inbox, Telegram тощо)', desc:'2 позиції', price:70 },
-      ]},
-      { title:'Шаблон листа', items:[
-        { label:'Шаблон листа Basic', price:270 },
-      ]},
-      { title:'Віджет підписки', items:[
-        { label:'Форма підписки та pop-up Basic', price:150 },
-      ]},
-      { title:'Тригери', items:[
-        { label:'Тригери DOI Basic', desc:'Підтвердження підписки · успішна підписка · контакт вже підписано · повторна підписка', price:105 },
-        { label:'Тригер «Покинутий кошик»', price:70 },
-        { label:'Тригер «Покинутий перегляд»', price:70 },
-        { label:'Тригер «Зниження ціни на покинутий кошик»', price:70 },
-        { label:'Тригер «Зниження ціни на покинутий перегляд»', price:70 },
-      ]},
-    ]
-  },
-  {
-    id:'full',
-    badge:'Full',
-    title:'Пакет 3',
-    subtitle:'Full',
-    desc:'Повний цикл: усі тригери, транзакційні листи, форми підписки та щомісячні промо-розсилки.',
-    needsBase:true,
-    fixedTotal:1620,
+    fixedTotal:1725,
     groups:[
       { title:'Налаштування акаунту', items:[
         { label:'Створення акаунту та забезпечення доставляння листів', desc:'Верифікація домену для гарантованої доставки', price:70 },
@@ -393,92 +600,537 @@ const PLANS = [
         { label:'Тригер «Покинутий перегляд»', price:70 },
         { label:'Тригер «Зниження ціни на покинутий кошик»', price:70 },
         { label:'Тригер «Зниження ціни на покинутий перегляд»', price:70 },
-        { label:'Транзакційні тригери', desc:'Прийнято · відправлено · доставлено · відмінено', price:140 },
+        { label:'Транзакційні тригери', desc:'Прийнято · відправлено · доставлено · відмінено', price:245 },
       ]},
       { title:'Автоматизовані промо', items:[
         { label:'Знижки (щомісячна проморозсилка)', price:70 },
         { label:'Новинки (щомісячна проморозсилка)', price:70 },
-        { label:'Категорійні автоматичні підбірки (1 лист)', price:70 },
+        { label:'Категорійні автоматичні підбірки', price:70, quantifiable:true },
       ]},
     ]
   },
 ];
 
-const baseSelection = { grow:'20k', full:'20k' };
+// --- QUIZ CONFIGURATION ---
+// Each question has options; each option can force certain services on/off
+// across all packages that contain them, and lock the toggle so the user
+// can no longer change it manually.
+const QUIZ = [
+  {
+    id:'q_channels',
+    type:'channelMatrix',
+    text:'Де ви ведете комунікацію на даний момент, або де хочете почати вести?',
+    channels:[
+      { id:'email', label:'Email' },
+      { id:'viber', label:'Viber' },
+      { id:'sms', label:'SMS' },
+      { id:'mobpush', label:'Mobile Push' },
+      { id:'webpush', label:'Web Push' },
+      { id:'appinbox', label:'App Inbox' },
+      { id:'telegram', label:'Telegram-бот' },
+      { id:'other', label:'Інше', customInput:true },
+    ]
+  },
+  {
+    id:'q_cms',
+    text:'На якій платформі у вас написаний сайт?',
+    options:[
+      { label:'Horoshop', effects:[] },
+      { label:'Shopify', effects:[] },
+      { label:'OpenCart', effects:[] },
+      { label:'Самопис', effects:[] },
+      { label:'Інше', effects:[], customInput:true, customPlaceholder:'Вкажіть платформу' },
+    ]
+  },
+  {
+    id:'q_support',
+    text:'Хто відповідає за технічну підтримку вашого сайту?',
+    options:[
+      { label:'Штатний розробник', effects:[] },
+      { label:'Агенція', effects:[] },
+      { label:'Фрілансер', effects:[] },
+      { label:'Відділ IT всередині компанії', effects:[] },
+      { label:'Інше', effects:[], customInput:true, customPlaceholder:'Вкажіть відповідальних' },
+    ]
+  },
+  {
+    id:'q0',
+    text:'Якою платформою для розсилок користуєтесь?',
+    options:[
+      { label:'Не користуюсь', effects:[
+        { matchLabel:'Створення акаунту та забезпечення доставляння листів', value:true },
+        { matchLabel:'Налаштування передачі та оновлення замовлень', value:true },
+        { matchLabel:'Налаштування передачі та оновлення контактів', value:true }
+      ]},
+      { label:'eSputnik', effects:[] },
+      { label:'Sendpulse', effects:[] },
+      { label:'Klaviyo', effects:[] },
+      { label:'Інші', effects:[], customInput:true, customPlaceholder:'Вкажіть назву платформи' },
+    ]
+  },
+  {
+    id:'q1',
+    text:'Чи є у вас створений акаунт та верифікований домен?',
+    showIf:{ questionId:'q0', notEquals:0 },
+    options:[
+      { label:'Так', effects:[
+        { matchLabel:'Створення акаунту та забезпечення доставляння листів', value:false }
+      ]},
+      { label:'Ні', effects:[
+        { matchLabel:'Створення акаунту та забезпечення доставляння листів', value:true },
+        { matchLabel:'Налаштування передачі та оновлення замовлень', value:true },
+        { matchLabel:'Налаштування передачі та оновлення контактів', value:true },
+        { matchLabel:'Встановлення скрипту для форм збору', value:true }
+      ]},
+    ]
+  },
+  {
+    id:'q1_sub',
+    text:'Хто налаштовував роботу в вашому сервісі?',
+    showIf:{ questionId:'q1', equals:0 }, // only shown when q1 = "Так"
+    options:[
+      { label:'Штатний маркетолог', effects:[] },
+      { label:'Агенція', effects:[] },
+      { label:'Фрілансер', effects:[] },
+      { label:'Сапорт сервісу за шаблонами', effects:[] },
+      { label:'Інше', effects:[], customInput:true, customPlaceholder:'Вкажіть відповідальних' },
+    ]
+  },
+  {
+    id:'q2',
+    text:'Вкажіть розмір вашої контактної бази',
+    // options are handled by custom logic below (tied to q3), not the generic effects engine
+    options:[
+      { label:'До 5 000 користувачів', effects:[] },
+      { label:'До 20 000 користувачів', effects:[] },
+      { label:'До 100 000 користувачів', effects:[] },
+      { label:'Від 100 000 користувачів', effects:[] },
+    ]
+  },
+  {
+    id:'q2_collect',
+    text:'Яким чином ви збираєте базу?',
+    multiSelect:true,
+    options:[
+      { label:'Форми збору на сайті', effects:[] },
+      { label:'Реєстрація на сайті/застосунку', effects:[] },
+      { label:'Імпорт з офлайн точок продажу', effects:[] },
+      { label:'CRM синхронізація', effects:[] },
+      { label:'Куплена база', effects:[] },
+      { label:'Інше', effects:[], customInput:true, customPlaceholder:'Вкажіть ваш варіант' },
+    ]
+  },
+  {
+    id:'q3',
+    text:'Чи відправляєте ви розсилки?',
+    // options are handled by custom logic below (tied to q2), not the generic effects engine
+    options:[
+      { label:'Так, постійно', effects:[] },
+      { label:'Ні, не відправляємо', effects:[] },
+    ]
+  },
+  {
+    id:'q4',
+    text:'Чи є у вас форми підписки? Якщо є, то які саме?',
+    multiSelect:true,
+    // options are handled by custom logic below, not the generic effects engine
+    options:[
+      { label:'Ні, немає', effects:[], exclusive:true },
+      { label:'Pop up', effects:[] },
+      { label:'Footer сайту', effects:[] },
+      { label:'Є, але інша', effects:[] },
+    ]
+  },
+];
+
+// maps q2 option index -> matching BASE_TIERS value (index 0 = "до 5000" has no
+// matching tier in Пакет 2/3, it only matches Пакет 1's dedicated line item)
+const Q2_TIER_MAP = ['5k', '20k', '100k', '100k+'];
+const POPUP_LABEL = 'Форма підписки та pop-up Basic';
+const DOI_LABEL = 'Тригери DOI Basic';
+const FORM_INTEGRATION_LABEL = 'Інтеграція форми на сайті (реєстрація, підписка)';
+
+const quizAnswers = {}; // questionId -> selected option index
+const quizCustomText = {}; // questionId -> free text entered for a "customInput" option
+const quizChannels = {}; // channelId -> 'current' | 'want' (undefined = not selected)
+
+// info about the base-size selector per plan, recomputed each render:
+// { locked: bool, forcedOff: bool }
+let baseState = {};
+
+function findKeyByLabel(plan, label){
+  for(let gi=0; gi<plan.groups.length; gi++){
+    const items = plan.groups[gi].items;
+    for(let ii=0; ii<items.length; ii++){
+      if(items[ii].label === label) return `${gi}-${ii}`;
+    }
+  }
+  return null;
+}
+
+// Recomputes which items are locked by quiz answers and forces their value.
+// Returns { [planId]: { [key]: true } } for locked items.
+function computeLocks(){
+  const locks = {};
+  const base = {};
+  PLANS.forEach(p => {
+    locks[p.id] = {};
+    base[p.id] = { locked:false, forcedOff:false };
+  });
+
+  // generic single-question effects (currently only q1 and q0)
+  QUIZ.forEach(q => {
+    if(q.type === 'channelMatrix') return; // has no options/effects, handled separately
+    if(!shouldShowQuestion(q)) return; // hidden sub-question — ignore any stale answer
+    if(q.multiSelect) return; // multi-select answers are arrays, not a single index — handled by custom logic (or intentionally have no generic effects)
+    if(q.id === 'q2' || q.id === 'q3') return; // handled by custom logic below
+    const idx = quizAnswers[q.id];
+    if(idx === undefined || idx === null) return;
+    const opt = q.options[idx];
+    opt.effects.forEach(eff => {
+      PLANS.forEach(plan => {
+        const key = findKeyByLabel(plan, eff.matchLabel);
+        if(key){
+          itemSelection[plan.id][key] = eff.value;
+          locks[plan.id][key] = true;
+        }
+      });
+    });
+  });
+
+  // custom logic: q2 (base size) + q3 (do they already send regularly)
+  const q2Idx = quizAnswers['q2'];
+  const q3Idx = quizAnswers['q3'];
+
+  if(q3Idx !== undefined && q3Idx !== null){
+    if(q3Idx === 0){
+      // "Так, постійно" — base warm-up isn't needed
+      PLANS.forEach(plan => {
+        if(plan.needsBase){
+          base[plan.id] = { locked:true, forcedOff:true };
+        }
+      });
+    } else {
+      // "Ні, не відправляємо" — base work is set according to the chosen size
+      PLANS.forEach(plan => {
+        if(plan.needsBase){
+          const tierValue = (q2Idx !== undefined && q2Idx !== null) ? Q2_TIER_MAP[q2Idx] : null;
+          if(tierValue){
+            baseSelection[plan.id] = tierValue;
+            base[plan.id] = { locked:true, forcedOff:false };
+          } else {
+            base[plan.id] = { locked:false, forcedOff:false };
+          }
+        }
+      });
+    }
+  }
+
+  // custom logic: q4 (subscription forms — multi-select)
+  const q4Sel = Array.isArray(quizAnswers['q4']) ? quizAnswers['q4'] : [];
+  if(q4Sel.length > 0){
+    const hasNone = q4Sel.includes(0);
+    const hasPopup = q4Sel.includes(1);
+    const hasFooter = q4Sel.includes(2);
+    const hasOther = q4Sel.includes(3);
+
+    let forcePopupDoiOn = false;
+    let forceFormIntegration = null; // null = no change, true/false = forced value
+
+    if(hasNone){
+      forcePopupDoiOn = true;
+      forceFormIntegration = false;
+    } else if(hasPopup && hasFooter){
+      // both selected together — client likely wants an update, leave everything as-is
+    } else if(hasFooter){
+      forcePopupDoiOn = true;
+      forceFormIntegration = true;
+    } else if(hasOther){
+      forceFormIntegration = true;
+    }
+    // "Pop up" selected alone — no forced changes
+
+    if(forcePopupDoiOn){
+      PLANS.forEach(plan => {
+        [POPUP_LABEL, DOI_LABEL].forEach(label => {
+          const key = findKeyByLabel(plan, label);
+          if(key){
+            itemSelection[plan.id][key] = true;
+            locks[plan.id][key] = true;
+          }
+        });
+      });
+    }
+    if(forceFormIntegration !== null){
+      PLANS.forEach(plan => {
+        const key = findKeyByLabel(plan, FORM_INTEGRATION_LABEL);
+        if(key){
+          itemSelection[plan.id][key] = forceFormIntegration;
+          locks[plan.id][key] = true;
+        }
+      });
+    }
+  }
+
+  baseState = base;
+  return locks;
+}
+
+const baseSelection = { offer:'20k' };
+
+// groups where the content-solution selector applies (as one combined choice, not per item)
+const SOLUTION_TYPE_GROUPS = new Set(['Шаблон листа', 'Віджет підписки', 'Тригери', 'Автоматизовані промо']);
+const SOLUTION_TYPES = ['Шаблонне рішення', 'Кастомізоване рішення', 'Контент на вашій стороні'];
+const OWN_CONTENT_INDEX = 2;
+
+// price overrides for "Кастомізоване рішення" and "Контент на вашій стороні" (per your filled-in table)
+// template price = the item's normal `price` field; these apply only when a non-template solution is chosen
+const SOLUTION_PRICE_OVERRIDES = {
+  'Шаблон листа Basic': { custom:685, copy:650, design:370, both:370 },
+  'Форма підписки та pop-up Basic': { custom:220, copy:202.5, design:132.5, both:115 },
+  'Форма в футері Basic': { custom:220, copy:202.5, design:132.5, both:115 },
+  'Тригери DOI Basic': { custom:570, copy:165, design:120, both:85 },
+  'Тригер «Покинутий кошик»': { custom:245, copy:210, design:175, both:140 },
+  'Тригер «Покинутий перегляд»': { custom:245, copy:210, design:175, both:140 },
+  'Тригер «Зниження ціни на покинутий кошик»': { custom:190, copy:155, design:120, both:85 },
+  'Тригер «Зниження ціни на покинутий перегляд»': { custom:190, copy:155, design:120, both:85 },
+  'Транзакційні тригери': { custom:815, copy:675, design:535, both:395 },
+  'Знижки (щомісячна проморозсилка)': { custom:190, copy:155, design:120, both:85 },
+  'Новинки (щомісячна проморозсилка)': { custom:190, copy:155, design:120, both:85 },
+  'Категорійні автоматичні підбірки': { custom:190, copy:155, design:120, both:85 },
+};
+
+// Returns the effective per-unit price for an item given the plan's current solution-type choice.
+function effectiveUnitPrice(item, plan){
+  const overrides = SOLUTION_PRICE_OVERRIDES[item.label];
+  if(!overrides) return item.price;
+
+  const type = solutionType[plan.id];
+  if(type === 0) return item.price; // Шаблонне рішення
+  if(type === 1) return overrides.custom; // Кастомізоване рішення
+
+  // Контент на вашій стороні — depends on which parts the client takes on
+  const parts = ownContentParts[plan.id] || { design:false, copy:false };
+  if(parts.design && parts.copy) return overrides.both;
+  if(parts.design) return overrides.design;
+  if(parts.copy) return overrides.copy;
+  return item.price; // neither part chosen yet — fall back to template price
+}
+
+// track which service items are switched on/off per plan (default: all on)
+const itemSelection = {};
+// track quantity for quantifiable items (default: 1)
+const itemQuantity = {};
+// single content-solution choice per plan (applies to all items in SOLUTION_TYPE_GROUPS at once)
+const solutionType = {};
+// which parts of "Контент на вашій стороні" apply — { design: bool, copy: bool }
+const ownContentParts = {};
+PLANS.forEach(plan => {
+  itemSelection[plan.id] = {};
+  itemQuantity[plan.id] = {};
+  solutionType[plan.id] = 0;
+  ownContentParts[plan.id] = { design:false, copy:false };
+  plan.groups.forEach((g, gi) => {
+    g.items.forEach((item, ii) => {
+      const key = `${gi}-${ii}`;
+      itemSelection[plan.id][key] = true;
+      if(item.quantifiable) itemQuantity[plan.id][key] = 1;
+    });
+  });
+});
 
 function currentTotal(plan){
-  if(!plan.needsBase) return plan.fixedTotal;
-  const tier = BASE_TIERS.find(t => t.value === baseSelection[plan.id]);
-  return plan.fixedTotal + tier.price;
+  let sum = 0;
+  plan.groups.forEach((g, gi) => {
+    g.items.forEach((item, ii) => {
+      const key = `${gi}-${ii}`;
+      if(itemSelection[plan.id][key]){
+        const qty = item.quantifiable ? (itemQuantity[plan.id][key] || 1) : 1;
+        sum += effectiveUnitPrice(item, plan) * qty;
+      }
+    });
+  });
+  if(plan.needsBase && !(baseState[plan.id] && baseState[plan.id].forcedOff)){
+    const tier = BASE_TIERS.find(t => t.value === baseSelection[plan.id]);
+    sum += tier.price;
+  }
+  return Math.round(sum * 100) / 100;
 }
 
 function renderPlans(){
+  const locks = computeLocks();
   const root = document.getElementById('plans');
   root.innerHTML = '';
 
   PLANS.forEach(plan => {
+    const total = currentTotal(plan);
+    const isUnavailable = total < 600;
+
     const card = document.createElement('div');
-    card.className = 'plan' + (plan.badge ? ' featured' : '');
+    card.className = 'plan' + (plan.badge ? ' featured' : '') + (isUnavailable ? ' unavailable' : '');
 
     let baseSelectHtml = '';
     if(plan.needsBase){
-      const pills = BASE_TIERS.map(t => {
-        const active = baseSelection[plan.id] === t.value;
-        return `<button type="button" class="tier-pill ${active?'active':''}" data-plan="${plan.id}" data-value="${t.value}">${t.label}</button>`;
-      }).join('');
-      baseSelectHtml = `
-        <div class="base-select">
-          <div class="base-select-label">Робота з контактною базою + прогрів</div>
-          <div class="base-select-desc">Оберіть розмір вашої бази контактів</div>
-          <div class="tier-row">${pills}</div>
-        </div>
-      `;
+      const bState = baseState[plan.id] || { locked:false, forcedOff:false };
+
+      if(bState.forcedOff){
+        baseSelectHtml = `
+          <div class="base-select base-select-off">
+            <div class="base-select-label">Робота з контактною базою + прогрів</div>
+            <div class="base-select-desc">${LOCK_ICON} Обов'язково: не потрібно — ви вже активно надсилаєте розсилки</div>
+          </div>
+        `;
+      } else {
+        const pills = BASE_TIERS.map(t => {
+          const active = baseSelection[plan.id] === t.value;
+          const lockAttr = bState.locked ? 'disabled' : '';
+          return `<button type="button" class="tier-pill ${active?'active':''}" ${lockAttr} data-plan="${plan.id}" data-value="${t.value}">${t.label}</button>`;
+        }).join('');
+        baseSelectHtml = `
+          <div class="base-select">
+            <div class="base-select-label">Робота з контактною базою + прогрів ${bState.locked ? `<span class="lock-badge">${LOCK_ICON} Обов'язково</span>` : ''}</div>
+            <div class="base-select-desc">Оберіть розмір вашої бази контактів</div>
+            <div class="tier-row">${pills}</div>
+          </div>
+        `;
+      }
     }
 
-    const groupsHtml = plan.groups.map(g => `
+    const currentSolutionType = solutionType[plan.id];
+    const currentOwnParts = ownContentParts[plan.id];
+    const solutionPills = SOLUTION_TYPES.map((label, sIdx) =>
+      `<button type="button" class="tier-pill solution-pill ${currentSolutionType === sIdx ? 'active' : ''}" data-plan="${plan.id}" data-solution-idx="${sIdx}">${label}</button>`
+    ).join('');
+    const ownContentHtml = (currentSolutionType === OWN_CONTENT_INDEX) ? `
+      <div class="own-content-note">
+        <span class="own-content-hint">Що саме на вашій стороні?</span>
+        <label class="own-content-check">
+          <input type="checkbox" class="own-content-checkbox" data-plan="${plan.id}" data-part="design" ${currentOwnParts.design ? 'checked' : ''}>
+          <span>Дизайн</span>
+        </label>
+        <label class="own-content-check">
+          <input type="checkbox" class="own-content-checkbox" data-plan="${plan.id}" data-part="copy" ${currentOwnParts.copy ? 'checked' : ''}>
+          <span>Копірайт</span>
+        </label>
+      </div>
+    ` : '';
+    const solutionTypeBlockHtml = `
+      <div class="solution-block">
+        <div class="solution-block-label">Тип реалізації контенту</div>
+        <div class="solution-block-desc">Стосується шаблону листа, віджету підписки, тригерів і промо-розсилок нижче</div>
+        <div class="tier-row">${solutionPills}</div>
+        ${ownContentHtml}
+      </div>
+    `;
+
+    const groupsHtml = plan.groups.map((g, gi) => `
       <div class="feat-group">
         <div class="feat-group-title">${g.title}</div>
-        ${g.items.map(i => `
-          <div class="feat">
-            <span class="tick">${TICK}</span>
+        ${(g.title === 'Шаблон листа') ? solutionTypeBlockHtml : ''}
+        ${g.items.map((i, ii) => {
+          const key = `${gi}-${ii}`;
+          const on = itemSelection[plan.id][key];
+          const isLocked = !!locks[plan.id][key];
+          const qty = itemQuantity[plan.id][key] || 1;
+          const itemPrice = Math.round(effectiveUnitPrice(i, plan) * (i.quantifiable ? qty : 1) * 100) / 100;
+          const priceHtml = `<span class="feat-price">$${itemPrice}</span>`;
+          const qtyHtml = (i.quantifiable && on) ? `
+            <div class="qty-stepper" data-plan="${plan.id}" data-key="${key}">
+              <button type="button" class="qty-btn" data-dir="-1">−</button>
+              <span class="qty-value">${qty}</span>
+              <button type="button" class="qty-btn" data-dir="1">+</button>
+            </div>
+          ` : '';
+          const controlHtml = isLocked
+            ? `<span class="lock-badge" title="Визначено квізом">${LOCK_ICON} Обов'язково</span>`
+            : `<button type="button" class="item-switch ${on ? 'on' : ''}" data-plan="${plan.id}" data-key="${key}" aria-label="Увімкнути/вимкнути послугу"></button>`;
+          return `
+          <div class="feat ${on ? '' : 'off'}">
+            <span class="tick">${on ? TICK : MINUS}</span>
             <span class="feat-text">
               <span class="feat-label">${i.label}</span>
               ${i.desc ? `<div class="feat-desc">${i.desc}</div>` : ''}
             </span>
+            <div class="feat-controls">
+              ${qtyHtml}
+              ${priceHtml}
+              ${controlHtml}
+            </div>
           </div>
-        `).join('')}
+        `;
+        }).join('')}
         ${ (g.title === 'Налаштування акаунту' && plan.needsBase) ? baseSelectHtml : '' }
       </div>
     `).join('');
 
     card.innerHTML = `
       ${plan.badge ? `<div class="plan-badge">${plan.badge}</div>` : ''}
+      ${isUnavailable ? `<div class="unavailable-banner">Пакет недоступний за поточними відповідами — мінімальна вартість не досягнута</div>` : ''}
       <div class="plan-head">
         <span class="plan-num">${plan.title}</span>
         <h2 class="plan-title">${plan.subtitle}</h2>
         <p class="plan-desc">${plan.desc}</p>
         <div class="plan-price">
-          <span class="amount">$<span>${plan.fixedTotal}</span></span>
+          <span class="amount" id="amount-${plan.id}">$<span>${total}</span></span>
         </div>
       </div>
       <div class="plan-body">${groupsHtml}</div>
       <div class="plan-foot">
         <div class="plan-total-row">
           <span class="plan-total-label">Разом</span>
-          <span class="plan-total-value" id="total-${plan.id}">$${currentTotal(plan)}</span>
+          <span class="plan-total-value" id="total-${plan.id}">$${total}</span>
         </div>
-        <button class="plan-cta" type="button" data-download="${plan.id}">Завантажити план робіт</button>
+        <button class="plan-cta" type="button" data-download="${plan.id}" ${isUnavailable ? 'disabled' : ''}>${isUnavailable ? 'Пакет недоступний' : 'Завантажити план робіт'}</button>
       </div>
     `;
 
     root.appendChild(card);
   });
 
-  root.querySelectorAll('.tier-pill').forEach(el => {
+  root.querySelectorAll('.tier-pill:not(.solution-pill)').forEach(el => {
     el.addEventListener('click', () => {
       const planId = el.dataset.plan;
       baseSelection[planId] = el.dataset.value;
-      renderPlans();
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.item-switch').forEach(el => {
+    el.addEventListener('click', () => {
+      const planId = el.dataset.plan;
+      const key = el.dataset.key;
+      itemSelection[planId][key] = !itemSelection[planId][key];
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.qty-btn').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wrap = el.closest('.qty-stepper');
+      const planId = wrap.dataset.plan;
+      const key = wrap.dataset.key;
+      const dir = parseInt(el.dataset.dir, 10);
+      const next = (itemQuantity[planId][key] || 1) + dir;
+      itemQuantity[planId][key] = Math.max(1, next);
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('[data-solution-idx]').forEach(el => {
+    el.addEventListener('click', () => {
+      const planId = el.dataset.plan;
+      solutionType[planId] = parseInt(el.dataset.solutionIdx, 10);
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.own-content-checkbox').forEach(el => {
+    el.addEventListener('change', () => {
+      const planId = el.dataset.plan;
+      const part = el.dataset.part;
+      ownContentParts[planId][part] = el.checked;
+      renderAll();
     });
   });
 
@@ -496,17 +1148,43 @@ function downloadPlan(planId){
 
   let baseLine = '';
   if(plan.needsBase){
-    const tier = BASE_TIERS.find(t => t.value === baseSelection[plan.id]);
-    baseLine = `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— Робота з контактною базою + прогрів: ${tier.label}</div>`;
+    const bState = baseState[plan.id] || { forcedOff:false };
+    if(bState.forcedOff){
+      baseLine = `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— Робота з контактною базою + прогрів: не потрібно</div>`;
+    } else {
+      const tier = BASE_TIERS.find(t => t.value === baseSelection[plan.id]);
+      baseLine = `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— Робота з контактною базою + прогрів: ${tier.label}</div>`;
+    }
   }
 
-  const groupsHtml = plan.groups.map(g => `
+  let solutionSummaryLine = `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— Тип реалізації контенту (шаблон, віджет, тригери, промо): ${SOLUTION_TYPES[solutionType[plan.id]]}</div>`;
+  if(solutionType[plan.id] === OWN_CONTENT_INDEX){
+    const parts = ownContentParts[plan.id];
+    const partLabels = [];
+    if(parts.design) partLabels.push('дизайн');
+    if(parts.copy) partLabels.push('копірайт');
+    if(partLabels.length) solutionSummaryLine = solutionSummaryLine.replace('</div>', ` (${partLabels.join(' + ')})</div>`);
+  }
+
+  const groupsHtml = plan.groups.map((g, gi) => {
+    const selectedItems = g.items
+      .map((item, ii) => ({ item, ii }))
+      .filter(({ ii }) => itemSelection[plan.id][`${gi}-${ii}`]);
+    if(selectedItems.length === 0) return '';
+    return `
     <div style="margin-bottom:22px;">
       <div style="font-family:'Unbounded',sans-serif; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.02em; color:#C73532; margin-bottom:10px;">${g.title}</div>
-      ${g.items.map(i => `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— ${i.label}</div>`).join('')}
+      ${selectedItems.map(({ item, ii }) => {
+        const key = `${gi}-${ii}`;
+        const qty = item.quantifiable ? (itemQuantity[plan.id][key] || 1) : null;
+        const qtyLabel = qty ? ` (${qty} ${qty === 1 ? 'лист' : 'листи'})` : '';
+        return `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— ${item.label}${qtyLabel}</div>`;
+      }).join('')}
+      ${ (g.title === 'Шаблон листа') ? solutionSummaryLine : '' }
       ${ (g.title === 'Налаштування акаунту' && plan.needsBase) ? baseLine : '' }
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   const bodyHtml = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
@@ -553,7 +1231,152 @@ ${bodyHtml}
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-renderPlans();
+function renderChannelMatrixQuestion(q){
+  const rowsHtml = q.channels.map(ch => {
+    const state = quizChannels[ch.id]; // 'current' | 'want' | undefined
+    const customInputHtml = (ch.customInput && state) ? `
+      <input type="text" class="quiz-custom-input channel-custom-input" data-channel="${ch.id}" placeholder="Вкажіть канал"
+        value="${(quizCustomText['q_channels_' + ch.id] || '').replace(/"/g, '&quot;')}">
+    ` : '';
+    return `
+      <div class="channel-row">
+        <span class="channel-label">${ch.label}</span>
+        <div class="channel-options">
+          <button type="button" class="channel-pill current ${state === 'current' ? 'active' : ''}" data-channel="${ch.id}" data-state="current">Вже веду</button>
+          <button type="button" class="channel-pill want ${state === 'want' ? 'active' : ''}" data-channel="${ch.id}" data-state="want">Хочу почати</button>
+        </div>
+        ${customInputHtml}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="quiz-q">
+      <div class="quiz-q-text">${q.text}</div>
+      <div class="channel-matrix">${rowsHtml}</div>
+    </div>
+  `;
+}
+
+function shouldShowQuestion(q){
+  if(!q.showIf) return true;
+  const refQ = QUIZ.find(qq => qq.id === q.showIf.questionId);
+  if(refQ && !shouldShowQuestion(refQ)) return false; // parent question itself hidden
+
+  const answer = quizAnswers[q.showIf.questionId];
+  if(q.showIf.equals !== undefined) return answer === q.showIf.equals;
+  if(q.showIf.notEquals !== undefined) return answer !== undefined && answer !== null && answer !== q.showIf.notEquals;
+  return true;
+}
+
+function renderQuiz(){
+  const root = document.getElementById('quiz');
+  const questionsHtml = QUIZ.filter(shouldShowQuestion).map(q => {
+    if(q.type === 'channelMatrix') return renderChannelMatrixQuestion(q);
+
+    const optionsHtml = q.multiSelect
+      ? q.options.map((opt, idx) => {
+          const checked = Array.isArray(quizAnswers[q.id]) && quizAnswers[q.id].includes(idx);
+          return `
+            <label class="quiz-checkbox-row">
+              <input type="checkbox" class="quiz-checkbox" data-q="${q.id}" data-idx="${idx}" ${checked ? 'checked' : ''}>
+              <span class="quiz-checkbox-box ${checked ? 'checked' : ''}">${checked ? TICK : ''}</span>
+              <span class="quiz-checkbox-label">${opt.label}</span>
+            </label>
+          `;
+        }).join('')
+      : q.options.map((opt, idx) => {
+          const active = quizAnswers[q.id] === idx;
+          return `<button type="button" class="quiz-pill ${active ? 'active' : ''}" data-q="${q.id}" data-idx="${idx}">${opt.label}</button>`;
+        }).join('');
+
+    let activeCustomOpt = null;
+    if(q.multiSelect){
+      const sel = Array.isArray(quizAnswers[q.id]) ? quizAnswers[q.id] : [];
+      const customIdx = sel.find(i => q.options[i] && q.options[i].customInput);
+      activeCustomOpt = (customIdx !== undefined) ? q.options[customIdx] : null;
+    } else {
+      const activeIdx = quizAnswers[q.id];
+      activeCustomOpt = (activeIdx !== undefined && activeIdx !== null && q.options[activeIdx] && q.options[activeIdx].customInput)
+        ? q.options[activeIdx] : null;
+    }
+    const customInputHtml = activeCustomOpt ? `
+      <input type="text" class="quiz-custom-input" data-q="${q.id}" placeholder="${activeCustomOpt.customPlaceholder || 'Вкажіть деталі'}"
+        value="${(quizCustomText[q.id] || '').replace(/"/g, '&quot;')}">
+    ` : '';
+
+    return `
+      <div class="quiz-q">
+        <div class="quiz-q-text">${q.text}</div>
+        <div class="${q.multiSelect ? 'quiz-checkbox-list' : 'quiz-options'}">${optionsHtml}</div>
+        ${customInputHtml}
+      </div>
+    `;
+  }).join('');
+
+  root.innerHTML = `
+    <div class="quiz-title">Кілька запитань перед вибором</div>
+    <p class="quiz-hint">Відповіді автоматично налаштують деякі позиції в пакетах нижче — такі позиції будуть позначені як «🔒 Обов'язково» і їх не можна буде змінити вручну.</p>
+    ${questionsHtml}
+  `;
+
+  root.querySelectorAll('.quiz-pill').forEach(el => {
+    el.addEventListener('click', () => {
+      const qId = el.dataset.q;
+      const idx = parseInt(el.dataset.idx, 10);
+      quizAnswers[qId] = idx;
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.quiz-checkbox').forEach(el => {
+    el.addEventListener('change', () => {
+      const qId = el.dataset.q;
+      const idx = parseInt(el.dataset.idx, 10);
+      const q = QUIZ.find(qq => qq.id === qId);
+      let arr = Array.isArray(quizAnswers[qId]) ? quizAnswers[qId].slice() : [];
+      const opt = q.options[idx];
+      if(opt.exclusive){
+        arr = arr.includes(idx) ? [] : [idx];
+      } else {
+        arr = arr.filter(i => !q.options[i].exclusive); // clear exclusive option if present
+        if(arr.includes(idx)) arr = arr.filter(i => i !== idx);
+        else arr.push(idx);
+      }
+      quizAnswers[qId] = arr;
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.channel-pill').forEach(el => {
+    el.addEventListener('click', () => {
+      const chId = el.dataset.channel;
+      const state = el.dataset.state;
+      quizChannels[chId] = (quizChannels[chId] === state) ? undefined : state;
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.channel-custom-input').forEach(el => {
+    el.addEventListener('input', () => {
+      quizCustomText['q_channels_' + el.dataset.channel] = el.value;
+    });
+  });
+
+  root.querySelectorAll('.quiz-custom-input').forEach(el => {
+    el.addEventListener('input', () => {
+      // stored silently, no re-render, so the input keeps focus while typing
+      quizCustomText[el.dataset.q] = el.value;
+    });
+  });
+}
+
+function renderAll(){
+  renderQuiz();
+  renderPlans();
+}
+
+renderAll();
 </script>
 
 </body>
