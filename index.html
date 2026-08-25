@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пакети послуги «Налаштування Retention» — Promodo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --dark: #0E0E0E;
+    --dark-soft: #1B1B1B;
+    --paper: #FFFFFF;
+    --bg: #F1F1F5;
+    --ink: #17181B;
+    --muted: #6B6F76;
+    --line: #E4E1DC;
+    --line-soft: #ECEAE6;
+    --accent: #C73532;
+    --accent-soft: #FFD6B3;
+    --on-dark-muted: #A9A9AC;
+    --good: #2E7D4F;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Montserrat', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+
+  /* ---------- header ---------- */
+  header.top{ background:var(--dark); color:var(--paper); }
+  .top-inner{ max-width:1200px; margin:0 auto; padding:22px 28px 34px; }
+  .nav-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:34px; }
+  .wordmark{
+    font-family:'Unbounded', sans-serif;
+    font-weight:700;
+    font-size:18px;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    color:var(--paper);
+  }
+  .wordmark span{ color:var(--accent); }
+  .cta-ghost{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--paper);
+    border:1px solid rgba(255,255,255,.35);
+    padding:9px 16px;
+    border-radius:999px;
+    text-decoration:none;
+    transition:background .15s ease, border-color .15s ease;
+    white-space:nowrap;
+  }
+  .cta-ghost:hover{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.6); }
+
+  .top-inner .eyebrow{ color:var(--accent); margin-bottom:14px; display:block; }
+  h1{
+    font-family:'Unbounded', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:clamp(28px, 3.6vw, 44px);
+    line-height:1.08;
+    margin:0 0 14px;
+    letter-spacing:-.01em;
+    max-width:820px;
+  }
+  .subtitle{
+    color:var(--on-dark-muted);
+    font-size:15.5px;
+    max-width:620px;
+    line-height:1.55;
+    margin:0;
+  }
+
+  /* ---------- main ---------- */
+  main{ max-width:1200px; margin:0 auto; padding:40px 28px 90px; }
+
+  .plans{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    align-items:stretch;
+  }
+  @media (max-width: 980px){
+    .plans{ grid-template-columns:1fr; }
+  }
+
+  .plan{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    position:relative;
+  }
+  .plan.featured{ border-color:var(--accent); box-shadow:0 8px 28px rgba(199,53,50,.14); }
+
+  .plan-badge{
+    position:absolute;
+    top:0; right:0;
+    background:var(--accent);
+    color:#fff;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:7px 14px;
+    border-bottom-left-radius:10px;
+  }
+
+  .plan-head{ padding:26px 24px 22px; border-bottom:1px solid var(--line-soft); }
+  .plan-num{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--accent);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    display:block;
+    margin-bottom:8px;
+  }
+  .plan-title{
+    font-family:'Unbounded', sans-serif;
+    font-weight:700;
+    font-size:21px;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+    margin:0 0 6px;
+  }
+  .plan-desc{ font-size:13px; color:var(--muted); line-height:1.5; margin:0 0 20px; min-height:38px; }
+
+  .plan-price{ display:flex; align-items:baseline; gap:6px; }
+  .plan-price .amount{
+    font-family:'Unbounded', sans-serif;
+    font-weight:700;
+    font-size:36px;
+    color:var(--ink);
+  }
+  .plan-price .amount span{ color:var(--accent); }
+  .plan-price .note{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+
+  .plan-body{ padding:6px 24px 8px; flex:1; }
+
+  .feat-group{ padding:16px 0; border-bottom:1px solid var(--line-soft); }
+  .feat-group:last-child{ border-bottom:none; }
+  .feat-group-title{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  .feat{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    font-size:13.5px;
+    line-height:1.45;
+    padding:6px 0;
+  }
+  .feat .tick{
+    flex-shrink:0;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--good);
+    display:flex; align-items:center; justify-content:center;
+    margin-top:2px;
+  }
+  .feat .tick svg{ width:9px; height:9px; }
+  .feat-text .feat-label{ color:var(--ink); }
+  .feat-text .feat-desc{ color:var(--muted); font-size:12px; margin-top:2px; line-height:1.5; }
+  .feat-price{
+    margin-left:auto;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    white-space:nowrap;
+    padding-left:8px;
+  }
+
+  /* --- base size selector (the only interactive control) --- */
+  .base-select{
+    background:var(--bg);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:14px 14px 12px;
+    margin:4px 0 2px;
+  }
+  .base-select-label{
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+    margin-bottom:2px;
+  }
+  .base-select-desc{ font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .tier-row{ display:flex; flex-wrap:wrap; gap:7px; }
+  .tier-pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    padding:8px 12px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    cursor:pointer;
+    border-radius:999px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .tier-pill:hover{ border-color:var(--accent); }
+  .tier-pill.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  .plan-foot{ padding:20px 24px 26px; margin-top:auto; }
+  .plan-total-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-top:1px solid var(--line-soft);
+    padding-top:16px; margin-bottom:14px;
+  }
+  .plan-total-label{ font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .plan-total-value{ font-family:'Unbounded', sans-serif; font-weight:700; font-size:22px; color:var(--accent); }
+
+  .plan-cta{
+    display:block;
+    width:100%;
+    text-align:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:14px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .plan-cta:hover{ background:#A32A27; }
+
+  .disclaimer{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 28px 40px;
+    font-size:11.5px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="nav-row">
+      <div class="wordmark">PROMO<span>DO</span></div>
+      <a class="cta-ghost" href="https://www.promodo.ua/" target="_blank" rel="noopener">Зв'язатися з нами</a>
+    </div>
+    <span class="eyebrow">Тарифи впровадження</span>
+    <h1>Пакети послуги «Налаштування Retention»</h1>
+    <p class="subtitle">Оберіть пакет відповідно до того, з чого ви стартуєте — без бази контактів, з готовою базою, або повний цикл з промо-розсилками. Єдине, що потрібно уточнити — розмір вашої контактної бази.</p>
+  </div>
+</header>
+
+<main>
+  <div class="plans" id="plans"></div>
+</main>
+
+<p class="disclaimer">Ціни орієнтовні та можуть коригуватись після уточнення деталей проєкту. Всі пакети реалізуються на базі платформи eSputnik.</p>
+
+<script>
+const TICK = `<svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.2L4.6 8.8L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+const BASE_TIERS = [
+  { value:'20k', label:'До 20 000', price:175 },
+  { value:'100k', label:'До 100 000', price:210 },
+  { value:'100k+', label:'Від 100 000', price:315 },
+];
+
+const PLANS = [
+  {
+    id:'start',
+    badge:null,
+    title:'Пакет 1',
+    subtitle:'Хочу почати, немає бази контактів',
+    desc:'Для старту з нуля і мінімальних технічних вимог',
+    needsBase:false,
+    fixedTotal:1015,
+    groups:[
+      { title:'Налаштування акаунту', items:[
+        { label:'Створення акаунту та забезпечення доставляння листів', desc:'Верифікація домену для гарантованої доставки', price:70 },
+      ]},
+      { title:'Технічні завдання', items:[
+        { label:'Налаштування передачі та оновлення замовлень', price:35 },
+        { label:'Налаштування передачі та оновлення контактів', price:35 },
+        { label:'Інтеграція форми на сайті (реєстрація, підписка)', price:35 },
+        { label:'Встановлення скрипту для форм збору', price:35 },
+        { label:'Додаткові ТЗ (App Inbox, Telegram тощо)', desc:'2 позиції', price:70 },
+      ]},
+      { title:'Шаблон листа', items:[
+        { label:'Шаблон листа Basic', price:270 },
+      ]},
+      { title:'Віджет підписки', items:[
+        { label:'Форма підписки та pop-up Basic', price:150 },
+      ]},
+      { title:'Тригери', items:[
+        { label:'Тригери DOI Basic', desc:'Підтвердження підписки · успішна підписка · контакт вже підписано · повторна підписка', price:105 },
+      ]},
+      { title:'Автоматизовані промо', items:[
+        { label:'Знижки (щомісячна проморозсилка)', price:70 },
+        { label:'Новинки (щомісячна проморозсилка)', price:70 },
+        { label:'Категорійні автоматичні підбірки (1 лист)', price:70 },
+      ]},
+    ]
+  },
+  {
+    id:'grow',
+    badge:null,
+    title:'Пакет 2',
+    subtitle:'Хочу почати, є база',
+    desc:'Для тих, у кого вже є контактна база і хто хоче отримати базовий набір поведінкових тригерів',
+    needsBase:true,
+    fixedTotal:1120,
+    groups:[
+      { title:'Налаштування акаунту', items:[
+        { label:'Створення акаунту та забезпечення доставляння листів', desc:'Верифікація домену для гарантованої доставки', price:70 },
+      ]},
+      { title:'Технічні завдання', items:[
+        { label:'Налаштування передачі та оновлення замовлень', price:35 },
+        { label:'Налаштування передачі та оновлення контактів', price:35 },
+        { label:'Інтеграція форми на сайті (реєстрація, підписка)', price:35 },
+        { label:'Встановлення скрипту для форм збору', price:35 },
+        { label:'ТЗ на web tracking / покинуті кошики/перегляди/зниження ціни', price:35 },
+        { label:'Додаткові ТЗ (App Inbox, Telegram тощо)', desc:'2 позиції', price:70 },
+      ]},
+      { title:'Шаблон листа', items:[
+        { label:'Шаблон листа Basic', price:270 },
+      ]},
+      { title:'Віджет підписки', items:[
+        { label:'Форма підписки та pop-up Basic', price:150 },
+      ]},
+      { title:'Тригери', items:[
+        { label:'Тригери DOI Basic', desc:'Підтвердження підписки · успішна підписка · контакт вже підписано · повторна підписка', price:105 },
+        { label:'Тригер «Покинутий кошик»', price:70 },
+        { label:'Тригер «Покинутий перегляд»', price:70 },
+        { label:'Тригер «Зниження ціни на покинутий кошик»', price:70 },
+        { label:'Тригер «Зниження ціни на покинутий перегляд»', price:70 },
+      ]},
+    ]
+  },
+  {
+    id:'full',
+    badge:'Full',
+    title:'Пакет 3',
+    subtitle:'Full',
+    desc:'Повний цикл: усі тригери, транзакційні листи, форми підписки та щомісячні промо-розсилки.',
+    needsBase:true,
+    fixedTotal:1620,
+    groups:[
+      { title:'Налаштування акаунту', items:[
+        { label:'Створення акаунту та забезпечення доставляння листів', desc:'Верифікація домену для гарантованої доставки', price:70 },
+      ]},
+      { title:'Технічні завдання', items:[
+        { label:'Налаштування передачі та оновлення замовлень', price:35 },
+        { label:'Налаштування передачі та оновлення контактів', price:35 },
+        { label:'Інтеграція форми на сайті (реєстрація, підписка)', price:35 },
+        { label:'Встановлення скрипту для форм збору', price:35 },
+        { label:'ТЗ на web tracking / покинуті кошики/перегляди/зниження ціни', price:35 },
+        { label:'Додаткові ТЗ (App Inbox, Telegram тощо)', desc:'2 позиції', price:70 },
+      ]},
+      { title:'Шаблон листа', items:[
+        { label:'Шаблон листа Basic', price:270 },
+      ]},
+      { title:'Віджет підписки', items:[
+        { label:'Форма підписки та pop-up Basic', price:150 },
+        { label:'Форма в футері Basic', price:150 },
+      ]},
+      { title:'Тригери', items:[
+        { label:'Тригери DOI Basic', desc:'Підтвердження підписки · успішна підписка · контакт вже підписано · повторна підписка', price:105 },
+        { label:'Тригер «Покинутий кошик»', price:70 },
+        { label:'Тригер «Покинутий перегляд»', price:70 },
+        { label:'Тригер «Зниження ціни на покинутий кошик»', price:70 },
+        { label:'Тригер «Зниження ціни на покинутий перегляд»', price:70 },
+        { label:'Транзакційні тригери', desc:'Прийнято · відправлено · доставлено · відмінено', price:140 },
+      ]},
+      { title:'Автоматизовані промо', items:[
+        { label:'Знижки (щомісячна проморозсилка)', price:70 },
+        { label:'Новинки (щомісячна проморозсилка)', price:70 },
+        { label:'Категорійні автоматичні підбірки (1 лист)', price:70 },
+      ]},
+    ]
+  },
+];
+
+const baseSelection = { grow:'20k', full:'20k' };
+
+function currentTotal(plan){
+  if(!plan.needsBase) return plan.fixedTotal;
+  const tier = BASE_TIERS.find(t => t.value === baseSelection[plan.id]);
+  return plan.fixedTotal + tier.price;
+}
+
+function renderPlans(){
+  const root = document.getElementById('plans');
+  root.innerHTML = '';
+
+  PLANS.forEach(plan => {
+    const card = document.createElement('div');
+    card.className = 'plan' + (plan.badge ? ' featured' : '');
+
+    let baseSelectHtml = '';
+    if(plan.needsBase){
+      const pills = BASE_TIERS.map(t => {
+        const active = baseSelection[plan.id] === t.value;
+        return `<button type="button" class="tier-pill ${active?'active':''}" data-plan="${plan.id}" data-value="${t.value}">${t.label}</button>`;
+      }).join('');
+      baseSelectHtml = `
+        <div class="base-select">
+          <div class="base-select-label">Робота з контактною базою + прогрів</div>
+          <div class="base-select-desc">Оберіть розмір вашої бази контактів</div>
+          <div class="tier-row">${pills}</div>
+        </div>
+      `;
+    }
+
+    const groupsHtml = plan.groups.map(g => `
+      <div class="feat-group">
+        <div class="feat-group-title">${g.title}</div>
+        ${g.items.map(i => `
+          <div class="feat">
+            <span class="tick">${TICK}</span>
+            <span class="feat-text">
+              <span class="feat-label">${i.label}</span>
+              ${i.desc ? `<div class="feat-desc">${i.desc}</div>` : ''}
+            </span>
+          </div>
+        `).join('')}
+        ${ (g.title === 'Налаштування акаунту' && plan.needsBase) ? baseSelectHtml : '' }
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      ${plan.badge ? `<div class="plan-badge">${plan.badge}</div>` : ''}
+      <div class="plan-head">
+        <span class="plan-num">${plan.title}</span>
+        <h2 class="plan-title">${plan.subtitle}</h2>
+        <p class="plan-desc">${plan.desc}</p>
+        <div class="plan-price">
+          <span class="amount">$<span>${plan.fixedTotal}</span></span>
+        </div>
+      </div>
+      <div class="plan-body">${groupsHtml}</div>
+      <div class="plan-foot">
+        <div class="plan-total-row">
+          <span class="plan-total-label">Разом</span>
+          <span class="plan-total-value" id="total-${plan.id}">$${currentTotal(plan)}</span>
+        </div>
+        <button class="plan-cta" type="button" data-download="${plan.id}">Завантажити план робіт</button>
+      </div>
+    `;
+
+    root.appendChild(card);
+  });
+
+  root.querySelectorAll('.tier-pill').forEach(el => {
+    el.addEventListener('click', () => {
+      const planId = el.dataset.plan;
+      baseSelection[planId] = el.dataset.value;
+      renderPlans();
+    });
+  });
+
+  root.querySelectorAll('[data-download]').forEach(el => {
+    el.addEventListener('click', () => {
+      downloadPlan(el.dataset.download);
+    });
+  });
+}
+
+function downloadPlan(planId){
+  const plan = PLANS.find(p => p.id === planId);
+  const total = currentTotal(plan);
+  const dateLabel = new Date().toLocaleDateString('uk-UA', { year:'numeric', month:'long', day:'numeric' });
+
+  let baseLine = '';
+  if(plan.needsBase){
+    const tier = BASE_TIERS.find(t => t.value === baseSelection[plan.id]);
+    baseLine = `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— Робота з контактною базою + прогрів: ${tier.label}</div>`;
+  }
+
+  const groupsHtml = plan.groups.map(g => `
+    <div style="margin-bottom:22px;">
+      <div style="font-family:'Unbounded',sans-serif; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.02em; color:#C73532; margin-bottom:10px;">${g.title}</div>
+      ${g.items.map(i => `<div style="font-size:13px; line-height:1.6; padding:6px 0; border-bottom:1px dashed #ECEAE6;">— ${i.label}</div>`).join('')}
+      ${ (g.title === 'Налаштування акаунту' && plan.needsBase) ? baseLine : '' }
+    </div>
+  `).join('');
+
+  const bodyHtml = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+      <div style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:16px; text-transform:uppercase; letter-spacing:.02em;">PROMO<span style="color:#C73532;">DO</span></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C73532; text-transform:uppercase; letter-spacing:.06em;">${dateLabel}</div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6B6F76; margin-bottom:8px;">${plan.title}</div>
+    <div style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:24px; text-transform:uppercase; line-height:1.25; margin-bottom:12px;">${plan.subtitle}</div>
+    <div style="font-size:13.5px; color:#6B6F76; margin-bottom:30px;">${plan.desc}</div>
+    <div style="border-top:1px solid #E4E1DC; margin-bottom:26px;"></div>
+    ${groupsHtml}
+    <div style="border-top:1px solid #E4E1DC; margin:24px 0 28px;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:#6B6F76;">Орієнтовна вартість</div>
+      <div style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:34px; color:#C73532;">$${total}</div>
+    </div>
+    <div style="font-size:10.5px; color:#9A9A9A; margin-top:18px; line-height:1.5;">Ціни орієнтовні та можуть коригуватись після уточнення деталей проєкту.</div>
+  `;
+
+  const fullHtml = `<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>План робіт — ${plan.subtitle} — Promodo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Montserrat:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  body{ margin:0; padding:56px; background:#FFFFFF; font-family:'Montserrat',sans-serif; color:#17181B; }
+  @media print{ body{ padding:24px; } }
+</style>
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>`;
+
+  const blob = new Blob([fullHtml], { type:'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `promodo-plan-${plan.id}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+renderPlans();
+</script>
+
+</body>
+</html>
