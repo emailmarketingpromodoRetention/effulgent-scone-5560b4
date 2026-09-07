@@ -391,6 +391,41 @@
     margin:0 0 4px;
   }
   .quiz-hint{ font-size:12.5px; color:var(--muted); margin:0 0 20px; }
+  .required-mark{ color:var(--accent); }
+
+  .quiz-continue{ margin:20px 0 36px; text-align:center; }
+  .continue-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:16px 32px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .continue-btn:hover{ background:#A32A27; }
+  .continue-hint{
+    font-size:12.5px;
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  .back-to-quiz{ margin-bottom:16px; }
+  .back-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.04em;
+    background:none;
+    border:none;
+    color:var(--muted);
+    cursor:pointer;
+    padding:0;
+  }
+  .back-btn:hover{ color:var(--accent); }
   .quiz-q{ padding:14px 0; border-top:1px solid var(--line-soft); }
   .quiz-q:first-of-type{ border-top:none; }
   .quiz-q-text{ font-size:14px; font-weight:500; color:var(--ink); margin-bottom:10px; }
@@ -472,33 +507,69 @@
     align-items:center;
     justify-content:space-between;
     flex-wrap:wrap;
-    gap:6px 8px;
+    gap:6px 10px;
     padding:9px 10px;
     border:1px solid var(--line-soft);
     border-radius:10px;
     background:var(--bg);
+  }
+  .channel-enable{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    position:relative;
+  }
+  .channel-enable-checkbox{
+    position:absolute;
+    top:0; left:0;
+    width:18px; height:18px;
+    opacity:0;
+    margin:0;
+    cursor:pointer;
   }
   .channel-label{
     font-size:12.5px;
     font-weight:500;
     color:var(--ink);
   }
-  .channel-options{ display:flex; gap:5px; }
-  .channel-pill{
+  .channel-options{ display:flex; gap:8px; flex-wrap:wrap; }
+  .channel-switch-wrap{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .channel-switch-label{
     font-family:'JetBrains Mono', monospace;
     font-size:10px;
-    padding:5px 9px;
-    border:1px solid var(--line);
-    background:var(--paper);
-    color:var(--ink);
-    cursor:pointer;
-    border-radius:999px;
+    color:var(--muted);
     white-space:nowrap;
-    transition:background .15s ease, color .15s ease, border-color .15s ease;
+    transition:color .15s ease;
   }
-  .channel-pill:hover{ border-color:var(--accent); }
-  .channel-pill.current.active{ background:var(--good); border-color:var(--good); color:#fff; }
-  .channel-pill.want.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .channel-switch-label.active{ color:var(--ink); font-weight:600; }
+  .channel-switch{
+    flex-shrink:0;
+    width:34px; height:19px;
+    border-radius:999px;
+    background:var(--good);
+    position:relative;
+    cursor:pointer;
+    border:none;
+    padding:0;
+    transition:background .15s ease;
+  }
+  .channel-switch::after{
+    content:'';
+    position:absolute;
+    top:2px; left:2px;
+    width:15px; height:15px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.25);
+    transition:transform .15s ease;
+  }
+  .channel-switch.on{ background:var(--accent); }
+  .channel-switch.on::after{ transform:translateX(15px); }
   .channel-custom-input{
     flex-basis:100%;
     margin-top:2px;
@@ -549,10 +620,12 @@
 
 <main>
   <div class="quiz" id="quiz"></div>
-  <div class="plans" id="plans"></div>
+  <div class="quiz-continue" id="quiz-continue"></div>
+  <div class="offer-page" id="offer-page">
+    <div class="plans" id="plans"></div>
+    <p class="disclaimer">Ціни орієнтовні та можуть коригуватись після уточнення деталей проєкту. Всі пакети реалізуються на базі платформи eSputnik.</p>
+  </div>
 </main>
-
-<p class="disclaimer">Ціни орієнтовні та можуть коригуватись після уточнення деталей проєкту. Всі пакети реалізуються на базі платформи eSputnik.</p>
 
 <script>
 const TICK = `<svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.2L4.6 8.8L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -753,6 +826,29 @@ const FORM_INTEGRATION_LABEL = 'Інтеграція форми на сайті 
 const quizAnswers = {}; // questionId -> selected option index
 const quizCustomText = {}; // questionId -> free text entered for a "customInput" option
 const quizChannels = {}; // channelId -> 'current' | 'want' (undefined = not selected)
+const quizChannelLastState = {}; // channelId -> remembers last 'current'/'want' choice while disabled
+
+let quizSubmitted = false; // true once the person clicked "Ознайомитись з пропозицією"
+
+// question ids that must be answered before the offer can be shown
+// (q1 is only actually required when it's currently visible — see isQuizComplete)
+const REQUIRED_QUESTION_IDS = ['q_cms', 'q_support', 'q0', 'q1', 'q2', 'q2_collect', 'q3', 'q4'];
+
+function isQuestionAnswered(qId){
+  const q = QUIZ.find(qq => qq.id === qId);
+  if(!q) return true;
+  const val = quizAnswers[qId];
+  if(q.multiSelect) return Array.isArray(val) && val.length > 0;
+  return val !== undefined && val !== null;
+}
+
+function isQuizComplete(){
+  return REQUIRED_QUESTION_IDS.every(qId => {
+    const q = QUIZ.find(qq => qq.id === qId);
+    if(q && !shouldShowQuestion(q)) return true; // not shown right now — not required
+    return isQuestionAnswered(qId);
+  });
+}
 
 // info about the base-size selector per plan, recomputed each render:
 // { locked: bool, forcedOff: bool }
@@ -1233,17 +1329,28 @@ ${bodyHtml}
 
 function renderChannelMatrixQuestion(q){
   const rowsHtml = q.channels.map(ch => {
-    const state = quizChannels[ch.id]; // 'current' | 'want' | undefined
-    const customInputHtml = (ch.customInput && state) ? `
+    const state = quizChannels[ch.id]; // 'current' | 'want' | undefined (undefined = not relevant)
+    const enabled = state !== undefined;
+    const customInputHtml = (ch.customInput && enabled) ? `
       <input type="text" class="quiz-custom-input channel-custom-input" data-channel="${ch.id}" placeholder="Вкажіть канал"
         value="${(quizCustomText['q_channels_' + ch.id] || '').replace(/"/g, '&quot;')}">
     ` : '';
+    const switchHtml = enabled ? `
+      <div class="channel-switch-wrap">
+        <span class="channel-switch-label ${state === 'current' ? 'active' : ''}">Вже веду</span>
+        <button type="button" class="channel-switch ${state === 'want' ? 'on' : ''}" data-channel="${ch.id}" aria-label="Перемкнути стан каналу ${ch.label}"></button>
+        <span class="channel-switch-label ${state === 'want' ? 'active' : ''}">Хочу почати</span>
+      </div>
+    ` : '';
     return `
       <div class="channel-row">
-        <span class="channel-label">${ch.label}</span>
+        <label class="channel-enable">
+          <input type="checkbox" class="channel-enable-checkbox" data-channel="${ch.id}" ${enabled ? 'checked' : ''}>
+          <span class="quiz-checkbox-box ${enabled ? 'checked' : ''}">${enabled ? TICK : ''}</span>
+          <span class="channel-label">${ch.label}</span>
+        </label>
         <div class="channel-options">
-          <button type="button" class="channel-pill current ${state === 'current' ? 'active' : ''}" data-channel="${ch.id}" data-state="current">Вже веду</button>
-          <button type="button" class="channel-pill want ${state === 'want' ? 'active' : ''}" data-channel="${ch.id}" data-state="want">Хочу почати</button>
+          ${switchHtml}
         </div>
         ${customInputHtml}
       </div>
@@ -1253,6 +1360,7 @@ function renderChannelMatrixQuestion(q){
   return `
     <div class="quiz-q">
       <div class="quiz-q-text">${q.text}</div>
+
       <div class="channel-matrix">${rowsHtml}</div>
     </div>
   `;
@@ -1307,7 +1415,7 @@ function renderQuiz(){
 
     return `
       <div class="quiz-q">
-        <div class="quiz-q-text">${q.text}</div>
+        <div class="quiz-q-text">${q.text}${REQUIRED_QUESTION_IDS.includes(q.id) ? ' <span class="required-mark">*</span>' : ''}</div>
         <div class="${q.multiSelect ? 'quiz-checkbox-list' : 'quiz-options'}">${optionsHtml}</div>
         ${customInputHtml}
       </div>
@@ -1348,11 +1456,23 @@ function renderQuiz(){
     });
   });
 
-  root.querySelectorAll('.channel-pill').forEach(el => {
+  root.querySelectorAll('.channel-enable-checkbox').forEach(el => {
+    el.addEventListener('change', () => {
+      const chId = el.dataset.channel;
+      if(el.checked){
+        quizChannels[chId] = quizChannelLastState[chId] || 'want';
+      } else {
+        quizChannelLastState[chId] = quizChannels[chId]; // remember for next time
+        quizChannels[chId] = undefined;
+      }
+      renderAll();
+    });
+  });
+
+  root.querySelectorAll('.channel-switch').forEach(el => {
     el.addEventListener('click', () => {
       const chId = el.dataset.channel;
-      const state = el.dataset.state;
-      quizChannels[chId] = (quizChannels[chId] === state) ? undefined : state;
+      quizChannels[chId] = (quizChannels[chId] === 'current') ? 'want' : 'current';
       renderAll();
     });
   });
@@ -1371,9 +1491,39 @@ function renderQuiz(){
   });
 }
 
+function renderQuizContinue(){
+  const root = document.getElementById('quiz-continue');
+  const complete = isQuizComplete();
+
+  if(quizSubmitted){
+    root.innerHTML = ''; // already revealed below — button no longer needed
+    return;
+  }
+
+  if(complete){
+    root.innerHTML = `<button type="button" class="continue-btn" id="continue-btn">Ознайомитись з пропозицією</button>`;
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      quizSubmitted = true;
+      renderAll();
+      document.getElementById('offer-page').scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  } else {
+    root.innerHTML = `<p class="continue-hint">Дайте відповідь на позначені * запитання вище, щоб побачити пропозицію</p>`;
+  }
+}
+
 function renderAll(){
+  const offerEl = document.getElementById('offer-page');
+
   renderQuiz();
-  renderPlans();
+  renderQuizContinue();
+
+  if(quizSubmitted){
+    offerEl.style.display = '';
+    renderPlans();
+  } else {
+    offerEl.style.display = 'none';
+  }
 }
 
 renderAll();
