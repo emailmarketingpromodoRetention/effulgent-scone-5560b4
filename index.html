@@ -260,19 +260,23 @@
     text-align:center;
   }
   .solution-block{
-    background:var(--paper);
-    border:1px dashed var(--line);
-    border-radius:10px;
-    padding:14px 14px 12px;
-    margin-bottom:14px;
+    background:var(--dark);
+    border:1.5px solid var(--dark);
+    border-radius:12px;
+    padding:16px 16px 14px;
+    margin-bottom:18px;
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
   }
   .solution-block-label{
-    font-size:13px;
-    font-weight:500;
-    color:var(--ink);
-    margin-bottom:2px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:#fff;
+    margin-bottom:4px;
   }
-  .solution-block-desc{ font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .solution-block-desc{ font-size:12.5px; color:rgba(255,255,255,.65); margin-bottom:12px; }
 
   .own-content-note{
     display:flex;
@@ -281,17 +285,17 @@
     gap:8px 14px;
     margin-top:10px;
     padding:8px 12px;
-    background:var(--bg);
-    border:1px dashed var(--line);
+    background:rgba(255,255,255,.08);
+    border:1px dashed rgba(255,255,255,.25);
     border-radius:8px;
   }
-  .own-content-hint{ font-size:11.5px; color:var(--muted); }
+  .own-content-hint{ font-size:11.5px; color:rgba(255,255,255,.65); }
   .own-content-check{
     display:flex;
     align-items:center;
     gap:6px;
     font-size:12.5px;
-    color:var(--ink);
+    color:#fff;
     cursor:pointer;
   }
   .own-content-check input{ accent-color:var(--accent); width:14px; height:14px; cursor:pointer; }
@@ -333,6 +337,21 @@
   .tier-pill.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
   .tier-pill:disabled{ cursor:not-allowed; opacity:.55; }
   .tier-pill:disabled:hover{ border-color:var(--line); }
+
+  .solution-pill{
+    border:1.5px solid rgba(255,255,255,.4);
+    background:transparent;
+    color:#fff;
+    font-weight:500;
+  }
+  .solution-pill:hover{ border-color:#fff; background:rgba(255,255,255,.08); }
+  .solution-pill.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+    font-weight:700;
+    box-shadow:0 0 0 3px rgba(199,53,50,.35);
+  }
 
   .base-select-label .lock-badge{ margin-left:8px; vertical-align:middle; }
   .base-select-off{ opacity:.75; }
@@ -603,6 +622,7 @@
   }
   .lock-badge svg{ flex-shrink:0; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -690,6 +710,12 @@ const PLANS = [
 // can no longer change it manually.
 const QUIZ = [
   {
+    id:'q_website',
+    type:'text',
+    text:'Вкажіть ваш сайт',
+    placeholder:'https://example.com',
+  },
+  {
     id:'q_channels',
     type:'channelMatrix',
     text:'Де ви ведете комунікацію на даний момент, або де хочете почати вести?',
@@ -742,34 +768,6 @@ const QUIZ = [
     ]
   },
   {
-    id:'q1',
-    text:'Чи є у вас створений акаунт та верифікований домен?',
-    showIf:{ questionId:'q0', notEquals:0 },
-    options:[
-      { label:'Так', effects:[
-        { matchLabel:'Створення акаунту та забезпечення доставляння листів', value:false }
-      ]},
-      { label:'Ні', effects:[
-        { matchLabel:'Створення акаунту та забезпечення доставляння листів', value:true },
-        { matchLabel:'Налаштування передачі та оновлення замовлень', value:true },
-        { matchLabel:'Налаштування передачі та оновлення контактів', value:true },
-        { matchLabel:'Встановлення скрипту для форм збору', value:true }
-      ]},
-    ]
-  },
-  {
-    id:'q1_sub',
-    text:'Хто налаштовував роботу в вашому сервісі?',
-    showIf:{ questionId:'q1', equals:0 }, // only shown when q1 = "Так"
-    options:[
-      { label:'Штатний маркетолог', effects:[] },
-      { label:'Агенція', effects:[] },
-      { label:'Фрілансер', effects:[] },
-      { label:'Сапорт сервісу за шаблонами', effects:[] },
-      { label:'Інше', effects:[], customInput:true, customPlaceholder:'Вкажіть відповідальних' },
-    ]
-  },
-  {
     id:'q2',
     text:'Вкажіть розмір вашої контактної бази',
     // options are handled by custom logic below (tied to q3), not the generic effects engine
@@ -788,30 +786,9 @@ const QUIZ = [
       { label:'Форми збору на сайті', effects:[] },
       { label:'Реєстрація на сайті/застосунку', effects:[] },
       { label:'Імпорт з офлайн точок продажу', effects:[] },
-      { label:'CRM синхронізація', effects:[] },
+      { label:'Відкриті джерела', effects:[] },
       { label:'Куплена база', effects:[] },
       { label:'Інше', effects:[], customInput:true, customPlaceholder:'Вкажіть ваш варіант' },
-    ]
-  },
-  {
-    id:'q3',
-    text:'Чи відправляєте ви розсилки?',
-    // options are handled by custom logic below (tied to q2), not the generic effects engine
-    options:[
-      { label:'Так, постійно', effects:[] },
-      { label:'Ні, не відправляємо', effects:[] },
-    ]
-  },
-  {
-    id:'q4',
-    text:'Чи є у вас форми підписки? Якщо є, то які саме?',
-    multiSelect:true,
-    // options are handled by custom logic below, not the generic effects engine
-    options:[
-      { label:'Ні, немає', effects:[], exclusive:true },
-      { label:'Pop up', effects:[] },
-      { label:'Footer сайту', effects:[] },
-      { label:'Є, але інша', effects:[] },
     ]
   },
 ];
@@ -819,9 +796,6 @@ const QUIZ = [
 // maps q2 option index -> matching BASE_TIERS value (index 0 = "до 5000" has no
 // matching tier in Пакет 2/3, it only matches Пакет 1's dedicated line item)
 const Q2_TIER_MAP = ['5k', '20k', '100k', '100k+'];
-const POPUP_LABEL = 'Форма підписки та pop-up Basic';
-const DOI_LABEL = 'Тригери DOI Basic';
-const FORM_INTEGRATION_LABEL = 'Інтеграція форми на сайті (реєстрація, підписка)';
 
 const quizAnswers = {}; // questionId -> selected option index
 const quizCustomText = {}; // questionId -> free text entered for a "customInput" option
@@ -832,13 +806,14 @@ let quizSubmitted = false; // true once the person clicked "Ознайомити
 
 // question ids that must be answered before the offer can be shown
 // (q1 is only actually required when it's currently visible — see isQuizComplete)
-const REQUIRED_QUESTION_IDS = ['q_cms', 'q_support', 'q0', 'q1', 'q2', 'q2_collect', 'q3', 'q4'];
+const REQUIRED_QUESTION_IDS = ['q_website', 'q_cms', 'q_support', 'q0', 'q2', 'q2_collect'];
 
 function isQuestionAnswered(qId){
   const q = QUIZ.find(qq => qq.id === qId);
   if(!q) return true;
   const val = quizAnswers[qId];
   if(q.multiSelect) return Array.isArray(val) && val.length > 0;
+  if(q.type === 'text') return typeof val === 'string' && val.trim().length > 0;
   return val !== undefined && val !== null;
 }
 
@@ -879,7 +854,7 @@ function computeLocks(){
     if(q.type === 'channelMatrix') return; // has no options/effects, handled separately
     if(!shouldShowQuestion(q)) return; // hidden sub-question — ignore any stale answer
     if(q.multiSelect) return; // multi-select answers are arrays, not a single index — handled by custom logic (or intentionally have no generic effects)
-    if(q.id === 'q2' || q.id === 'q3') return; // handled by custom logic below
+    if(q.id === 'q2') return; // handled by custom logic below
     const idx = quizAnswers[q.id];
     if(idx === undefined || idx === null) return;
     const opt = q.options[idx];
@@ -894,78 +869,18 @@ function computeLocks(){
     });
   });
 
-  // custom logic: q2 (base size) + q3 (do they already send regularly)
+  // custom logic: q2 (base size) — locks the base-tier selector to the matching size
   const q2Idx = quizAnswers['q2'];
-  const q3Idx = quizAnswers['q3'];
-
-  if(q3Idx !== undefined && q3Idx !== null){
-    if(q3Idx === 0){
-      // "Так, постійно" — base warm-up isn't needed
-      PLANS.forEach(plan => {
-        if(plan.needsBase){
-          base[plan.id] = { locked:true, forcedOff:true };
+  if(q2Idx !== undefined && q2Idx !== null){
+    PLANS.forEach(plan => {
+      if(plan.needsBase){
+        const tierValue = Q2_TIER_MAP[q2Idx];
+        if(tierValue){
+          baseSelection[plan.id] = tierValue;
+          base[plan.id] = { locked:true, forcedOff:false };
         }
-      });
-    } else {
-      // "Ні, не відправляємо" — base work is set according to the chosen size
-      PLANS.forEach(plan => {
-        if(plan.needsBase){
-          const tierValue = (q2Idx !== undefined && q2Idx !== null) ? Q2_TIER_MAP[q2Idx] : null;
-          if(tierValue){
-            baseSelection[plan.id] = tierValue;
-            base[plan.id] = { locked:true, forcedOff:false };
-          } else {
-            base[plan.id] = { locked:false, forcedOff:false };
-          }
-        }
-      });
-    }
-  }
-
-  // custom logic: q4 (subscription forms — multi-select)
-  const q4Sel = Array.isArray(quizAnswers['q4']) ? quizAnswers['q4'] : [];
-  if(q4Sel.length > 0){
-    const hasNone = q4Sel.includes(0);
-    const hasPopup = q4Sel.includes(1);
-    const hasFooter = q4Sel.includes(2);
-    const hasOther = q4Sel.includes(3);
-
-    let forcePopupDoiOn = false;
-    let forceFormIntegration = null; // null = no change, true/false = forced value
-
-    if(hasNone){
-      forcePopupDoiOn = true;
-      forceFormIntegration = false;
-    } else if(hasPopup && hasFooter){
-      // both selected together — client likely wants an update, leave everything as-is
-    } else if(hasFooter){
-      forcePopupDoiOn = true;
-      forceFormIntegration = true;
-    } else if(hasOther){
-      forceFormIntegration = true;
-    }
-    // "Pop up" selected alone — no forced changes
-
-    if(forcePopupDoiOn){
-      PLANS.forEach(plan => {
-        [POPUP_LABEL, DOI_LABEL].forEach(label => {
-          const key = findKeyByLabel(plan, label);
-          if(key){
-            itemSelection[plan.id][key] = true;
-            locks[plan.id][key] = true;
-          }
-        });
-      });
-    }
-    if(forceFormIntegration !== null){
-      PLANS.forEach(plan => {
-        const key = findKeyByLabel(plan, FORM_INTEGRATION_LABEL);
-        if(key){
-          itemSelection[plan.id][key] = forceFormIntegration;
-          locks[plan.id][key] = true;
-        }
-      });
-    }
+      }
+    });
   }
 
   baseState = base;
@@ -1300,31 +1215,41 @@ function downloadPlan(planId){
     <div style="font-size:10.5px; color:#9A9A9A; margin-top:18px; line-height:1.5;">Ціни орієнтовні та можуть коригуватись після уточнення деталей проєкту.</div>
   `;
 
-  const fullHtml = `<!DOCTYPE html>
-<html lang="uk">
-<head>
-<meta charset="UTF-8">
-<title>План робіт — ${plan.subtitle} — Promodo</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Montserrat:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-  body{ margin:0; padding:56px; background:#FFFFFF; font-family:'Montserrat',sans-serif; color:#17181B; }
-  @media print{ body{ padding:24px; } }
-</style>
-</head>
-<body>
-${bodyHtml}
-</body>
-</html>`;
+  const container = document.createElement('div');
+  container.style.width = '700px';
+  container.style.padding = '40px';
+  container.style.background = '#FFFFFF';
+  container.style.fontFamily = "'Montserrat', sans-serif";
+  container.style.color = '#17181B';
+  container.style.position = 'fixed';
+  container.style.left = '-10000px';
+  container.style.top = '0';
+  container.innerHTML = bodyHtml;
+  document.body.appendChild(container);
 
-  const blob = new Blob([fullHtml], { type:'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `promodo-plan-${plan.id}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  const btn = document.querySelector(`[data-download="${planId}"]`);
+  const originalLabel = btn ? btn.textContent : null;
+  if(btn){ btn.disabled = true; btn.textContent = 'Готуємо PDF…'; }
+
+  html2pdf()
+    .set({
+      margin: 10,
+      filename: `promodo-plan-${plan.id}.pdf`,
+      image: { type:'jpeg', quality:0.98 },
+      html2canvas: { scale:2, useCORS:true },
+      jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
+      pagebreak: { mode:['avoid-all', 'css', 'legacy'] }
+    })
+    .from(container)
+    .save()
+    .then(() => {
+      document.body.removeChild(container);
+      if(btn){ btn.disabled = false; btn.textContent = originalLabel; }
+    })
+    .catch(() => {
+      document.body.removeChild(container);
+      if(btn){ btn.disabled = false; btn.textContent = originalLabel; }
+    });
 }
 
 function renderChannelMatrixQuestion(q){
@@ -1377,10 +1302,21 @@ function shouldShowQuestion(q){
   return true;
 }
 
+function renderTextQuestion(q){
+  return `
+    <div class="quiz-q">
+      <div class="quiz-q-text">${q.text}${REQUIRED_QUESTION_IDS.includes(q.id) ? ' <span class="required-mark">*</span>' : ''}</div>
+      <input type="text" class="quiz-custom-input quiz-text-answer" data-q="${q.id}" placeholder="${q.placeholder || ''}"
+        value="${(quizAnswers[q.id] || '').replace(/"/g, '&quot;')}">
+    </div>
+  `;
+}
+
 function renderQuiz(){
   const root = document.getElementById('quiz');
   const questionsHtml = QUIZ.filter(shouldShowQuestion).map(q => {
     if(q.type === 'channelMatrix') return renderChannelMatrixQuestion(q);
+    if(q.type === 'text') return renderTextQuestion(q);
 
     const optionsHtml = q.multiSelect
       ? q.options.map((opt, idx) => {
@@ -1487,6 +1423,13 @@ function renderQuiz(){
     el.addEventListener('input', () => {
       // stored silently, no re-render, so the input keeps focus while typing
       quizCustomText[el.dataset.q] = el.value;
+    });
+  });
+
+  root.querySelectorAll('.quiz-text-answer').forEach(el => {
+    el.addEventListener('input', () => {
+      // stored silently, no re-render, so the input keeps focus while typing
+      quizAnswers[el.dataset.q] = el.value;
     });
   });
 }
