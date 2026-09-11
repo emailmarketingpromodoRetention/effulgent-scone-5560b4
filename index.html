@@ -852,6 +852,7 @@ function computeLocks(){
   // generic single-question effects (currently only q1 and q0)
   QUIZ.forEach(q => {
     if(q.type === 'channelMatrix') return; // has no options/effects, handled separately
+    if(q.type === 'text') return; // free-text answer, not an options index
     if(!shouldShowQuestion(q)) return; // hidden sub-question — ignore any stale answer
     if(q.multiSelect) return; // multi-select answers are arrays, not a single index — handled by custom logic (or intentionally have no generic effects)
     if(q.id === 'q2') return; // handled by custom logic below
